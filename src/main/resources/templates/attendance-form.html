@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Record Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">AI-Enhanced Attendance Platform</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/employees">Employees</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/attendance">Attendance</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            AI Insights
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/insights/daily}">Daily Summary</a></li>
+                            <li><a class="dropdown-item" th:href="@{/insights/weekly}">Weekly Summary</a></li>
+                            <li><a class="dropdown-item" th:href="@{/insights/absences}">Absence Analysis</a></li>
+                            <li><a class="dropdown-item" th:href="@{/attendance/analytics}">Attendance Analytics</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="card-title mb-0" th:text="${attendance.id == null ? 'Record New Attendance' : 'Edit Attendance Record'}">Attendance Form</h3>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/attendance/save}" th:object="${attendance}" method="post" class="needs-validation" novalidate>
+                            <input type="hidden" th:field="*{id}" />
+                            
+                            <!-- Employee Selection -->
+                            <div class="mb-3">
+                                <label for="employeeId" class="form-label">Employee*</label>
+                                <select class="form-select" id="employeeId" th:field="*{employeeId}" required>
+                                    <option value="">-- Select Employee --</option>
+                                    <option th:each="employee : ${employees}" 
+                                            th:value="${employee.id}" 
+                                            th:text="${employee.name + ' (' + employee.employeeId + ')'}">
+                                    </option>
+                                </select>
+                                <div class="invalid-feedback">Please select an employee.</div>
+                            </div>
+                            
+                            <!-- Date -->
+                            <div class="mb-3">
+                                <label for="date" class="form-label">Date*</label>
+                                <input type="date" class="form-control" id="date" th:field="*{date}" required>
+                                <div class="invalid-feedback">Please select a date.</div>
+                            </div>
+                            
+                            <!-- Check In Time -->
+                            <div class="mb-3">
+                                <label for="checkIn" class="form-label">Check In Time</label>
+                                <input type="time" class="form-control" id="checkIn" th:field="*{checkIn}">
+                                <div class="form-text">Leave blank for absences or leave.</div>
+                            </div>
+                            
+                            <!-- Check Out Time -->
+                            <div class="mb-3">
+                                <label for="checkOut" class="form-label">Check Out Time</label>
+                                <input type="time" class="form-control" id="checkOut" th:field="*{checkOut}">
+                                <div class="form-text">Leave blank for absences or leave.</div>
+                            </div>
+                            
+                            <!-- Attendance Status -->
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Status*</label>
+                                <select class="form-select" id="status" th:field="*{status}" required>
+                                    <option value="">-- Select Status --</option>
+                                    <option th:each="status : ${statuses}" 
+                                            th:value="${status}" 
+                                            th:text="${status}">
+                                    </option>
+                                </select>
+                                <div class="invalid-feedback">Please select a status.</div>
+                            </div>
+                            
+                            <!-- Work Location -->
+                            <div class="mb-3">
+                                <label for="workLocation" class="form-label">Work Location*</label>
+                                <select class="form-select" id="workLocation" th:field="*{workLocation}" required>
+                                    <option value="">-- Select Location --</option>
+                                    <option th:each="location : ${workLocations}" 
+                                            th:value="${location}" 
+                                            th:text="${location}">
+                                    </option>
+                                </select>
+                                <div class="invalid-feedback">Please select a work location.</div>
+                            </div>
+                            
+                            <!-- Notes -->
+                            <div class="mb-3">
+                                <label for="notes" class="form-label">Notes</label>
+                                <textarea class="form-control" id="notes" th:field="*{notes}" rows="3"></textarea>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <a th:href="@{/attendance}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Back to List
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i> Save Attendance
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer mt-5 py-3 bg-dark text-white">
+        <div class="container text-center">
+            <span>AI-Enhanced Attendance Platform © 2023</span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Form validation script
+        (function () {
+            'use strict'
+            
+            // Fetch all forms we want to apply validation to
+            const forms = document.querySelectorAll('.needs-validation')
+            
+            // Flag to prevent multiple submissions
+            let isSubmitting = false;
+            
+            // Loop over them and prevent submission
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    
+                    form.classList.add('was-validated')
+                    
+                    // Prevent multiple submissions
+                    if (isSubmitting) {
+                        event.preventDefault();
+                        return;
+                    }
+                    
+                    if (form.checkValidity()) {
+                        isSubmitting = true;
+                        
+                        // Disable the submit button
+                        const submitButton = form.querySelector('button[type="submit"]');
+                        if (submitButton) {
+                            submitButton.disabled = true;
+                            submitButton.innerHTML = '<i class="bi bi-hourglass"></i> Saving...';
+                        }
+                    }
+                }, false)
+            })
+            
+            // Enhance UX for attendance status selection
+            const statusSelect = document.getElementById('status');
+            const checkInField = document.getElementById('checkIn');
+            const checkOutField = document.getElementById('checkOut');
+            
+            statusSelect.addEventListener('change', function() {
+                const selectedStatus = this.value;
+                if (selectedStatus === 'ABSENT' || selectedStatus === 'ON_LEAVE') {
+                    checkInField.value = '';
+                    checkOutField.value = '';
+                    checkInField.disabled = true;
+                    checkOutField.disabled = true;
+                } else {
+                    checkInField.disabled = false;
+                    checkOutField.disabled = false;
+                }
+            });
+            
+            // Initialize the form based on current status
+            if (statusSelect.value === 'ABSENT' || statusSelect.value === 'ON_LEAVE') {
+                checkInField.value = '';
+                checkOutField.value = '';
+                checkInField.disabled = true;
+                checkOutField.disabled = true;
+            }
+        })()
+    </script>
+</body>
+</html> 

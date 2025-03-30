@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: attendance_db
+    environment:
+      POSTGRES_DB: attendance_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  attendance-platform:
+    build: .
+    container_name: attendance-platform
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/attendance_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-your-openai-api-key-here}
+    ports:
+      - "8080:8080"
+    restart: always
+
+volumes:
+  postgres_data:

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Analytics</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">AI-Enhanced Attendance Platform</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/employees">Employees</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/attendance">Attendance</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown">
+                            AI Insights
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/insights/daily}">Daily Summary</a></li>
+                            <li><a class="dropdown-item" th:href="@{/insights/weekly}">Weekly Summary</a></li>
+                            <li><a class="dropdown-item" th:href="@{/insights/absences}">Absence Analysis</a></li>
+                            <li><a class="dropdown-item active" th:href="@{/attendance/analytics}">Attendance Analytics</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1 class="mb-4">Attendance Analytics</h1>
+        
+        <!-- Date filter -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Filter by Month/Year</h5>
+                <form th:action="@{/attendance/analytics}" method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="month" class="form-label">Month</label>
+                        <select class="form-select" id="month" name="month">
+                            <option value="1" th:selected="${month == 1}">January</option>
+                            <option value="2" th:selected="${month == 2}">February</option>
+                            <option value="3" th:selected="${month == 3}">March</option>
+                            <option value="4" th:selected="${month == 4}">April</option>
+                            <option value="5" th:selected="${month == 5}">May</option>
+                            <option value="6" th:selected="${month == 6}">June</option>
+                            <option value="7" th:selected="${month == 7}">July</option>
+                            <option value="8" th:selected="${month == 8}">August</option>
+                            <option value="9" th:selected="${month == 9}">September</option>
+                            <option value="10" th:selected="${month == 10}">October</option>
+                            <option value="11" th:selected="${month == 11}">November</option>
+                            <option value="12" th:selected="${month == 12}">December</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="year" class="form-label">Year</label>
+                        <select class="form-select" id="year" name="year">
+                            <option value="2022" th:selected="${year == 2022}">2022</option>
+                            <option value="2023" th:selected="${year == 2023}">2023</option>
+                            <option value="2024" th:selected="${year == 2024}">2024</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Absences Chart -->
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="card-title mb-0">Employee Absences</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${absencesByEmployee.isEmpty()}" class="alert alert-info">
+                            No absences recorded for this period.
+                        </div>
+                        <div th:if="${!absencesByEmployee.isEmpty()}">
+                            <canvas id="absencesChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card-footer" th:if="${!absencesByEmployee.isEmpty()}">
+                        <h6>Top Absences</h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center" 
+                                th:each="entry, iterStat : ${absencesByEmployee}" th:if="${iterStat.index < 5}">
+                                <span th:text="${entry.key}">Employee Name</span>
+                                <span class="badge bg-danger rounded-pill" th:text="${entry.value}">0</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Remote Work Chart -->
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="card-title mb-0">Remote Work Days</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${remoteWorkByEmployee.isEmpty()}" class="alert alert-info">
+                            No remote work recorded for this period.
+                        </div>
+                        <div th:if="${!remoteWorkByEmployee.isEmpty()}">
+                            <canvas id="remoteWorkChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card-footer" th:if="${!remoteWorkByEmployee.isEmpty()}">
+                        <h6>Top Remote Workers</h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center" 
+                                th:each="entry, iterStat : ${remoteWorkByEmployee}" th:if="${iterStat.index < 5}">
+                                <span th:text="${entry.key}">Employee Name</span>
+                                <span class="badge bg-info rounded-pill" th:text="${entry.value}">0</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Download Reports -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Download Reports</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <a href="#" class="btn btn-outline-primary btn-lg w-100 mb-2">
+                            <i class="bi bi-file-earmark-excel"></i> Export to Excel
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="#" class="btn btn-outline-primary btn-lg w-100 mb-2">
+                            <i class="bi bi-file-earmark-pdf"></i> Export to PDF
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="#" class="btn btn-outline-primary btn-lg w-100 mb-2">
+                            <i class="bi bi-printer"></i> Print Report
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer mt-5 py-3 bg-dark text-white">
+        <div class="container text-center">
+            <span>AI-Enhanced Attendance Platform © 2023</span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        // Absence Chart
+        const absenceData = /*[[${absencesByEmployee}]]*/ {};
+        if (Object.keys(absenceData).length > 0) {
+            const absenceLabels = Object.keys(absenceData);
+            const absenceValues = Object.values(absenceData);
+            const abCtx = document.getElementById('absencesChart').getContext('2d');
+            new Chart(abCtx, {
+                type: 'bar',
+                data: {
+                    labels: absenceLabels,
+                    datasets: [{
+                        label: 'Number of Absences',
+                        data: absenceValues,
+                        backgroundColor: 'rgba(220, 53, 69, 0.5)',
+                        borderColor: 'rgba(220, 53, 69, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Remote Work Chart
+        const remoteData = /*[[${remoteWorkByEmployee}]]*/ {};
+        if (Object.keys(remoteData).length > 0) {
+            const remoteLabels = Object.keys(remoteData);
+            const remoteValues = Object.values(remoteData);
+            const rmCtx = document.getElementById('remoteWorkChart').getContext('2d');
+            new Chart(rmCtx, {
+                type: 'bar',
+                data: {
+                    labels: remoteLabels,
+                    datasets: [{
+                        label: 'Remote Work Days',
+                        data: remoteValues,
+                        backgroundColor: 'rgba(23, 162, 184, 0.5)',
+                        borderColor: 'rgba(23, 162, 184, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        /*]]>*/
+    </script>
+</body>
+</html> 

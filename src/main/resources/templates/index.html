@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Enhanced Attendance Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">AI-Enhanced Attendance Platform</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/employees">Employees</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/attendance">Attendance</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            AI Insights
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/insights/daily}">Daily Summary</a></li>
+                            <li><a class="dropdown-item" th:href="@{/insights/weekly}">Weekly Summary</a></li>
+                            <li><a class="dropdown-item" th:href="@{/insights/absences}">Absence Analysis</a></li>
+                            <li><a class="dropdown-item" th:href="@{/attendance/analytics}">Attendance Analytics</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/ai-assistant}">AI Assistant</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="jumbotron">
+            <h1 class="display-4">Welcome to the AI-Enhanced Attendance Platform</h1>
+            <p class="lead">Using AI to provide insights into attendance patterns and trends</p>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Employee Overview</h5>
+                        <p class="card-text">Total Employees: <span th:text="${employeeCount}">0</span></p>
+                        <a href="/employees" class="btn btn-primary">View All Employees</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Today's Attendance</h5>
+                        <p class="card-text">Date: <span th:text="${today}">2023-01-01</span></p>
+                        <a th:href="@{/attendance}" class="btn btn-primary">View Attendance</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Weekly Attendance</h5>
+                        <p class="card-text">
+                            <span th:text="${weekStart}">2023-01-01</span> to 
+                            <span th:text="${weekEnd}">2023-01-07</span>
+                        </p>
+                        <a th:href="@{/insights/weekly}" class="btn btn-primary">View Weekly Summary</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Absence Analysis</h5>
+                        <p class="card-text">
+                            Month: <span th:text="${currentMonth}">JANUARY</span>
+                            <span th:text="${currentYear}">2023</span>
+                        </p>
+                        <a th:href="@{/insights/absences}" class="btn btn-primary">View Absence Analysis</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Remote Work Analysis</h5>
+                        <p class="card-text">
+                            Month: <span th:text="${currentMonth}">JANUARY</span>
+                            <span th:text="${currentYear}">2023</span>
+                        </p>
+                        <a th:href="@{/attendance/analytics}" class="btn btn-primary">View Attendance Analytics</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Employee Management</h5>
+                        <p class="card-text">Manage employee information and view attendance records.</p>
+                        <a href="/employees" class="btn btn-primary">Manage Employees</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Attendance Management</h5>
+                        <p class="card-text">Record and manage daily attendance for all employees.</p>
+                        <a th:href="@{/attendance}" class="btn btn-primary">Manage Attendance</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer mt-5 py-3 bg-dark text-white">
+        <div class="container text-center">
+            <span>AI-Enhanced Attendance Platform © 2023</span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
