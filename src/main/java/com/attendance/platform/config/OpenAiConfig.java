@@ -10,17 +10,17 @@ import org.springframework.context.annotation.Configuration;
 public class OpenAiConfig {
 
     @Value("${openai.api.key}")
-    private String apiKey;
+    private String openAiApiKey;
 
     @Value("${openai.model}")
-    private String model;
+    private String openAiModel;
 
     @Bean
     public ChatLanguageModel chatLanguageModel() {
         return OpenAiChatModel.builder()
-                .apiKey(apiKey)
-                .modelName(model)
-                .temperature(0.7)
+                .apiKey(openAiApiKey)
+                .modelName(openAiModel)
+                .temperature(0.0)
                 .build();
     }
 }
