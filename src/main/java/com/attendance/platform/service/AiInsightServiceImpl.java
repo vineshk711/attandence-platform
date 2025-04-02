@@ -19,20 +19,7 @@ import java.util.stream.Collectors;
 public class AiInsightServiceImpl implements AiInsightService {
 
     private final AttendanceService attendanceService;
-
-    @Value("${openai.api.key}")
-    private String openaiApiKey;
-
-    @Value("${openai.model}")
-    private String openaiModel;
-
-    private ChatLanguageModel getChatModel() {
-        return OpenAiChatModel.builder()
-                .apiKey(openaiApiKey)
-                .modelName("gpt-4o-mini")
-                .temperature(0.7)
-                .build();
-    }
+    private final ChatLanguageModel chatLanguageModel;
 
     @Override
     public String generateDailySummary(LocalDate date) {
@@ -46,7 +33,7 @@ public class AiInsightServiceImpl implements AiInsightService {
         String prompt = buildDailySummaryPrompt(attendances, formattedDate);
 
         try {
-            return getChatModel().generate(prompt);
+            return chatLanguageModel.generate(prompt);
         } catch (Exception e) {
             return "Error generating summary: " + e.getMessage();
         }
@@ -63,7 +50,7 @@ public class AiInsightServiceImpl implements AiInsightService {
         String prompt = buildWeeklySummaryPrompt(attendances, startDate, endDate);
 
         try {
-            return getChatModel().generate(prompt);
+            return chatLanguageModel.generate(prompt);
         } catch (Exception e) {
             return "Error generating summary: " + e.getMessage();
         }
@@ -84,7 +71,7 @@ public class AiInsightServiceImpl implements AiInsightService {
                         .collect(Collectors.joining("\n"));
 
         try {
-            return getChatModel().generate(prompt);
+            return chatLanguageModel.generate(prompt);
         } catch (Exception e) {
             return "Error generating analysis: " + e.getMessage();
         }
@@ -105,7 +92,7 @@ public class AiInsightServiceImpl implements AiInsightService {
                         .collect(Collectors.joining("\n"));
 
         try {
-            return getChatModel().generate(prompt);
+            return chatLanguageModel.generate(prompt);
         } catch (Exception e) {
             return "Error generating analysis: " + e.getMessage();
         }
@@ -131,7 +118,7 @@ public class AiInsightServiceImpl implements AiInsightService {
                         .collect(Collectors.joining("\n"));
 
         try {
-            return getChatModel().generate(prompt);
+            return chatLanguageModel.generate(prompt);
         } catch (Exception e) {
             return "Error answering query: " + e.getMessage();
         }
